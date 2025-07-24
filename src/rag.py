@@ -33,6 +33,7 @@ def run_rag(query: str, vector_store):
         model=config.CHAT_MODEL,
         google_api_key=config.GEMINI_API_KEY,
         temperature=0.3,
+        convert_system_message_to_human=True, 
         model_kwargs={"system_instruction": config.SYSTEM_INSTRUCTION}
     )
     qa = RetrievalQA.from_chain_type(
