@@ -32,7 +32,7 @@ def run_query(query: str) -> str:
 if __name__ == '__main__':
     print("🩺 ArogyaBot – Medical Assistant (type 'exit' to quit)")
     while True:
-        user_input = input("\n🧑‍⚕️ You: ")
+        user_input = input("\n You: ")
         if user_input.strip().lower() == "exit":
             break
-        print("\n🤖 Bot:", run_query(user_input))
+        print("\n Bot:", run_query(user_input))
