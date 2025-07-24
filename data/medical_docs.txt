@@ -1,2 +1,73 @@
-Headaches can be caused by stress, dehydration, or underlying medical conditions.
-Drink water, rest, and seek medical attention if the issue persists.
+## Fever
+Fever is a temporary increase in body temperature, often due to an infection. 
+It can also result from heat exhaustion, inflammation, or vaccination. 
+Treatment includes rest, hydration, and antipyretic medications like paracetamol or ibuprofen.
+
+## Cold
+The common cold is a viral infection of the upper respiratory tract. 
+Symptoms include runny nose, sneezing, sore throat, and mild fever. 
+Treatment involves rest, fluids, nasal decongestants, and symptom management.
+
+## Sore Throat
+Sore throats are often caused by viral infections but can also result from bacterial infections, allergies, or irritation. 
+Treatment includes warm salt water gargles, lozenges, and pain relievers. 
+Seek medical attention for persistent or severe symptoms.
+
+## Stomach Pain
+Stomach pain can be due to indigestion, gas, food poisoning, ulcers, or infections. 
+Mild cases may resolve with rest and hydration. 
+Persistent or severe pain should be evaluated by a healthcare provider.
+
+## Diarrhea
+Diarrhea involves frequent, loose, or watery stools. 
+Common causes include infections, food intolerance, or medications. 
+Treatment includes oral rehydration, probiotics, and in some cases, anti-diarrheal medications.
+
+## Constipation
+Constipation is characterized by infrequent or difficult bowel movements. 
+It can be caused by low fiber intake, dehydration, or lack of physical activity. 
+Management includes increased water, fiber, and regular exercise.
+
+## Asthma
+Asthma is a chronic condition affecting the airways, leading to wheezing, shortness of breath, and coughing. 
+It can be triggered by allergens, pollution, or exercise. 
+Treatment includes inhalers, avoiding triggers, and regular medical follow-ups.
+
+## Diabetes
+Diabetes is a metabolic disorder that affects how the body uses blood sugar (glucose). 
+There are two types: Type 1 (insulin-dependent) and Type 2 (lifestyle-related). 
+Management includes diet, physical activity, medication, and regular monitoring.
+
+## High Blood Pressure
+Also known as hypertension, this condition increases the risk of heart disease and stroke. 
+It often has no symptoms but can be managed through lifestyle changes and medications. 
+Regular monitoring is essential.
+
+## Allergies
+Allergies occur when the immune system reacts to a harmless substance. 
+Common allergens include pollen, dust, and certain foods. 
+Symptoms may include sneezing, rash, swelling, or difficulty breathing. 
+Treatment includes antihistamines and avoiding known allergens.
+
+## Vomiting
+Vomiting can result from food poisoning, infections, motion sickness, or migraines. 
+It is the body’s way of expelling harmful substances. 
+Hydration is crucial. Persistent vomiting requires medical attention.
+
+## Skin Rash
+Rashes can be caused by infections, allergies, or autoimmune conditions. 
+They may appear as redness, bumps, or blisters. 
+Treatment depends on the cause and may include antihistamines, moisturizers, or topical steroids.
+
+## Back Pain
+Back pain may result from muscle strain, poor posture, herniated discs, or underlying health conditions. 
+Management includes rest, stretching, physiotherapy, and pain relief medications.
+
+## Fatigue
+Fatigue can be caused by lack of sleep, stress, poor nutrition, or underlying conditions like anemia or thyroid disorders. 
+Treatment includes lifestyle modifications and addressing any medical issues.
+
+## Anxiety
+Anxiety involves excessive worry or fear. 
+It may be triggered by stress, trauma, or may be part of an anxiety disorder. 
+Management includes counseling, relaxation techniques, and sometimes medication.
