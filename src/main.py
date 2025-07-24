@@ -1,11 +1,16 @@
 from src.rag import load_documents, create_vector_store, run_rag
-from src import config  # ✅ centralized config
+from src import config
+
+# 🧠 Load once at start
+docs = load_documents(config.DOC_PATH)
+vector_store = create_vector_store(docs)
 
 def run_query(query: str) -> str:
-    docs = load_documents(config.DOC_PATH)  # ✅ use configured path
-    vector_store = create_vector_store(docs)
     return run_rag(query, vector_store)
 
 if __name__ == '__main__':
-    q = input("Ask ArogyaBot: ")
-    print(run_query(q))
+    while True:
+        q = input("Ask ArogyaBot (or type 'exit'): ")
+        if q.lower() == 'exit':
+            break
+        print("\n🧠 Answer:\n", run_query(q))
