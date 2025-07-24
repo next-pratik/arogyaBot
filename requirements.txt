@@ -6,3 +6,6 @@ streamlit
 python-dotenv
 tavily-python
 pytest
+gTTS                 
+googletrans==4.0.0rc1  
+langdetect         
