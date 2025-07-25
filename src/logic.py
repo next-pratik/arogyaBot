@@ -27,4 +27,4 @@ def process_user_prompt(prompt: str):
         return reply_local, audio_fp
 
     except Exception as e:
-        return f"❌ Sorry, something went wrong.\n\n{str(e)}", None
+        return f"Sorry, something went wrong.\n\n{str(e)}", None

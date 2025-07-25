@@ -20,15 +20,14 @@ def init_vector_store():
         vector_store = create_vector_store(docs)
     return vector_store
 
-# ✅ Main query interface used by Streamlit
+
 def run_query(query: str) -> str:
     try:
-        store = init_vector_store()  # <-- lazy load here
+        store = init_vector_store()  
         return run_rag(query, store)
     except Exception as e:
-        return f"❌ An error occurred while processing your question: {str(e)}"
+        return f" An error occurred while processing your question: {str(e)}"
 
-# ✅ Optional: CLI interface for local testing
 if __name__ == '__main__':
     print("🩺 ArogyaBot – Medical Assistant (type 'exit' to quit)")
     while True:
