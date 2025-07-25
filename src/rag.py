@@ -17,7 +17,7 @@ def is_medical_query(query: str) -> bool:
         "medicine", "health", "fever", "infection", "cancer", "diabetes", "blood",
         "prescription", "clinic", "hospital", "mental health", "anxiety", "therapy",
         "flu", "cold", "rash", "vomiting", "surgery", "injury", "doctor", "nurse",
-        "aids", "hiv", "hepatitis", "std", "infection", "immunodeficiency", "virus"
+        "aids", "hiv", "hepatitis", "std", "immunodeficiency", "virus"
     ]
     query = query.lower()
     return any(keyword in query for keyword in medical_keywords)
@@ -64,7 +64,7 @@ def create_vector_store(docs):
     )
     return FAISS.from_documents(docs, embeddings)
 
-# ✅ Run RAG pipeline
+# ✅ Run RAG pipeline with web and doc fallback
 def run_rag(query: str, vector_store):
     query = query.strip()
 
@@ -80,9 +80,19 @@ def run_rag(query: str, vector_store):
     retriever = vector_store.as_retriever()
     retrieved_docs = retriever.get_relevant_documents(query)
 
+    if not retrieved_docs:
+        print("⚠️ No relevant documents found in FAISS.")
+    else:
+        print(f"✅ Retrieved {len(retrieved_docs)} documents from FAISS.")
+
     # Step 3: Search web with Tavily
     tavily = TavilySearchResults(k=3)
     web_results = tavily.run(query)
+
+    if not web_results:
+        print("⚠️ Tavily returned no web results.")
+    else:
+        print(f"🌐 Tavily returned {len(web_results)} web results.")
 
     # Step 4: Convert Tavily results into a document
     web_content = ""
@@ -95,13 +105,21 @@ def run_rag(query: str, vector_store):
 
     # Step 5: Combine retrieved docs and web docs
     combined_docs = []
+    sources = []
+
     if retrieved_docs:
         combined_docs.extend(retrieved_docs)
+        sources.append("📚 Local Documents")
+
     if web_doc:
         combined_docs.append(web_doc)
+        sources.append("🌐 Web (Tavily)")
 
-    # Step 6: Build a helpful system prompt
-    prompt = f"""
+    if not combined_docs:
+        return "❌ Sorry, I couldn't find any relevant information in local documents or on the web."
+
+    # Step 6: System prompt
+    system_prompt = f"""
 You are a helpful health assistant. Based on the provided documents, answer the user's medical question.
 Use both internal content and live web search results where relevant. Be detailed, accurate, and explain step-by-step if needed.
 
@@ -120,7 +138,7 @@ User Query: {query}
     chain = load_qa_chain(llm, chain_type="stuff")
     result = chain.run(
         input_documents=combined_docs,
-        question=prompt
+        question=system_prompt
     )
 
-    return result
+    return f"🔍 Sources used: {', '.join(sources)}\n\n{result}"
