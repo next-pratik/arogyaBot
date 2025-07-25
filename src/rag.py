@@ -1,4 +1,5 @@
 import warnings
+import re
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_community.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
@@ -10,7 +11,7 @@ from src import config  # Centralized config
 # Suppress FAISS deprecation warning
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-# ✅ Utility: Check if query is medical
+# ✅ Check if query is medically relevant
 def is_medical_query(query: str) -> bool:
     medical_keywords = [
         "pain", "symptom", "cough", "headache", "disease", "treatment", "diagnosis",
@@ -22,17 +23,19 @@ def is_medical_query(query: str) -> bool:
     query = query.lower()
     return any(keyword in query for keyword in medical_keywords)
 
-# ✅ Utility: Detect small talk / greetings
+#  Detect small talk / greetings using regex (fixes 'hi' in 'hiv')
 def is_small_talk(query: str) -> bool:
-    small_talk_phrases = [
-        "hi", "hello", "hey", "how are you", "what can you do", "who are you",
-        "help", "how can you help", "how does this work", "what is your name",
-        "start", "get started", "introduce yourself"
+    small_talk_patterns = [
+        r"\bhi\b", r"\bhello\b", r"\bhey\b", r"\bhow are you\b",
+        r"\bwhat can you do\b", r"\bwho are you\b", r"\bhelp\b",
+        r"\bhow can you help\b", r"\bhow does this work\b",
+        r"\bwhat is your name\b", r"\bstart\b", r"\bget started\b",
+        r"\bintroduce yourself\b"
     ]
     query = query.lower()
-    return any(phrase in query for phrase in small_talk_phrases)
+    return any(re.search(pattern, query) for pattern in small_talk_patterns)
 
-# ✅ Utility: Friendly small talk replies
+#  Friendly replies for small talk
 def handle_small_talk(query: str) -> str:
     responses = {
         "hi": "Hi there! 👋 How can I help you with your health today?",
@@ -48,7 +51,7 @@ def handle_small_talk(query: str) -> str:
             return response
     return "I'm here to support you with anything related to health or medical concerns. How can I help you today?"
 
-# ✅ Load and split documents into chunks
+#  Load and split documents
 def load_documents(file_path: str = config.DOC_PATH):
     with open(file_path, 'r', encoding='utf-8') as f:
         text = f.read()
@@ -56,7 +59,7 @@ def load_documents(file_path: str = config.DOC_PATH):
     chunks = splitter.split_text(text)
     return [Document(page_content=chunk) for chunk in chunks]
 
-# ✅ Create FAISS vector store using Gemini embeddings
+#  Create FAISS vector store
 def create_vector_store(docs):
     embeddings = GoogleGenerativeAIEmbeddings(
         model=config.EMBEDDING_MODEL,
@@ -64,61 +67,61 @@ def create_vector_store(docs):
     )
     return FAISS.from_documents(docs, embeddings)
 
-# ✅ Run RAG pipeline with web and doc fallback
+# RAG pipeline combining FAISS + Tavily
 def run_rag(query: str, vector_store):
     query = query.strip()
 
-    # Step 0: Handle greetings and general small talk
+    # Step 0: Handle small talk
     if is_small_talk(query):
         return handle_small_talk(query)
 
-    # Step 1: Validate medical relevance
+    # Step 1: Ensure it's a medical query
     if not is_medical_query(query):
-        return "⚠️ I'm here to assist only with health or medical-related topics. Please ask a health-related question."
+        return " I'm here to assist only with health or medical-related topics. Please ask a health-related question."
 
-    # Step 2: Retrieve from local documents (FAISS)
+    # Step 2: Retrieve from FAISS
     retriever = vector_store.as_retriever()
     retrieved_docs = retriever.get_relevant_documents(query)
 
     if not retrieved_docs:
-        print("⚠️ No relevant documents found in FAISS.")
+        print(" No relevant documents found in FAISS.")
     else:
-        print(f"✅ Retrieved {len(retrieved_docs)} documents from FAISS.")
+        print(f" Retrieved {len(retrieved_docs)} documents from FAISS.")
 
-    # Step 3: Search web with Tavily
+    # Step 3: Tavily web search (always run)
     tavily = TavilySearchResults(k=3)
     web_results = tavily.run(query)
 
     if not web_results:
-        print("⚠️ Tavily returned no web results.")
+        print(" Tavily returned no web results.")
     else:
-        print(f"🌐 Tavily returned {len(web_results)} web results.")
+        print(f" Tavily returned {len(web_results)} web results.")
 
-    # Step 4: Convert Tavily results into a document
-    web_content = ""
+    # Step 4: Convert web results into document
+    web_doc = None
     if web_results:
         web_content = "\n".join(
             [f"- {res['content']}" for res in web_results if 'content' in res and res['content']]
         )
+        if web_content.strip():
+            web_doc = Document(page_content=web_content, metadata={"source": "Tavily"})
 
-    web_doc = Document(page_content=web_content, metadata={"source": "Tavily"}) if web_content else None
-
-    # Step 5: Combine retrieved docs and web docs
+    # Step 5: Combine all sources
     combined_docs = []
     sources = []
 
     if retrieved_docs:
         combined_docs.extend(retrieved_docs)
-        sources.append(" Local Documents")
+        sources.append("Local Documents")
 
     if web_doc:
         combined_docs.append(web_doc)
-        sources.append(" Web (Tavily)")
+        sources.append("Web (Tavily)")
 
     if not combined_docs:
-        return "❌ Sorry, I couldn't find any relevant information in local documents or on the web."
+        return " Sorry, I couldn't find any relevant information in local documents or on the web."
 
-    # Step 6: System prompt
+    # Step 6: Create system prompt
     system_prompt = f"""
 You are a helpful health assistant. Based on the provided documents, answer the user's medical question.
 Use both internal content and live web search results where relevant. Be detailed, accurate, and explain step-by-step if needed.
@@ -126,7 +129,7 @@ Use both internal content and live web search results where relevant. Be detaile
 User Query: {query}
 """
 
-    # Step 7: Run LLM with chain
+    # Step 7: LLM call with chain
     llm = ChatGoogleGenerativeAI(
         model=config.CHAT_MODEL,
         google_api_key=config.GEMINI_API_KEY,
@@ -141,4 +144,4 @@ User Query: {query}
         question=system_prompt
     )
 
-    return f"🔍 Sources used: {', '.join(sources)}\n\n{result}"
+    return f"Sources used: {', '.join(sources)}\n\n{result}"
