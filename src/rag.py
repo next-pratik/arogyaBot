@@ -51,7 +51,7 @@ def handle_small_talk(query: str) -> str:
 def load_documents(file_path: str = config.DOC_PATH):
     with open(file_path, 'r', encoding='utf-8') as f:
         text = f.read()
-    splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=100)
     chunks = splitter.split_text(text)
     return [Document(page_content=chunk) for chunk in chunks]
 
