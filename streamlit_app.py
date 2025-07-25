@@ -15,7 +15,7 @@ if sys.platform.startswith("win"):
         pass
 
 # Streamlit page setup
-st.set_page_config(page_title="ArogyaBot – Medical Assistant", layout="centered")
+st.set_page_config(page_title="AarogyaBot – Medical Assistant", layout="centered")
 
 # Custom styling
 st.markdown("""
@@ -49,7 +49,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<h1 style='text-align:center;'>ArogyaBot – Your Trusted Health Assistant</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align:center;'>AarogyaBot – Your Trusted Health Assistant</h1>", unsafe_allow_html=True)
 
 # Initialize session state
 if "chat_history" not in st.session_state:
