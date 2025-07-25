@@ -10,18 +10,19 @@ from src import config  # Centralized config
 # Suppress FAISS deprecation warning
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-#utilty: Check if query is medical
+# ✅ Utility: Check if query is medical
 def is_medical_query(query: str) -> bool:
     medical_keywords = [
         "pain", "symptom", "cough", "headache", "disease", "treatment", "diagnosis",
         "medicine", "health", "fever", "infection", "cancer", "diabetes", "blood",
         "prescription", "clinic", "hospital", "mental health", "anxiety", "therapy",
-        "flu", "cold", "rash", "vomiting", "surgery", "injury", "doctor", "nurse"
+        "flu", "cold", "rash", "vomiting", "surgery", "injury", "doctor", "nurse",
+        "aids", "hiv", "hepatitis", "std", "infection", "immunodeficiency", "virus"
     ]
     query = query.lower()
     return any(keyword in query for keyword in medical_keywords)
 
-#Utilty: Detect small talk / greetings
+# ✅ Utility: Detect small talk / greetings
 def is_small_talk(query: str) -> bool:
     small_talk_phrases = [
         "hi", "hello", "hey", "how are you", "what can you do", "who are you",
@@ -31,7 +32,7 @@ def is_small_talk(query: str) -> bool:
     query = query.lower()
     return any(phrase in query for phrase in small_talk_phrases)
 
-# Utility: Friendly small talk replies
+# ✅ Utility: Friendly small talk replies
 def handle_small_talk(query: str) -> str:
     responses = {
         "hi": "Hi there! 👋 How can I help you with your health today?",
@@ -47,7 +48,7 @@ def handle_small_talk(query: str) -> str:
             return response
     return "I'm here to support you with anything related to health or medical concerns. How can I help you today?"
 
-#Load and split documents into chunks
+# ✅ Load and split documents into chunks
 def load_documents(file_path: str = config.DOC_PATH):
     with open(file_path, 'r', encoding='utf-8') as f:
         text = f.read()
@@ -55,7 +56,7 @@ def load_documents(file_path: str = config.DOC_PATH):
     chunks = splitter.split_text(text)
     return [Document(page_content=chunk) for chunk in chunks]
 
-# Create FAISS vector store using Gemini embeddings
+# ✅ Create FAISS vector store using Gemini embeddings
 def create_vector_store(docs):
     embeddings = GoogleGenerativeAIEmbeddings(
         model=config.EMBEDDING_MODEL,
@@ -63,7 +64,7 @@ def create_vector_store(docs):
     )
     return FAISS.from_documents(docs, embeddings)
 
-#Run RAG pipeline
+# ✅ Run RAG pipeline
 def run_rag(query: str, vector_store):
     query = query.strip()
 
@@ -75,7 +76,7 @@ def run_rag(query: str, vector_store):
     if not is_medical_query(query):
         return "⚠️ I'm here to assist only with health or medical-related topics. Please ask a health-related question."
 
-    # Step 2: Retrieve local chunks
+    # Step 2: Retrieve from local documents (FAISS)
     retriever = vector_store.as_retriever()
     retrieved_docs = retriever.get_relevant_documents(query)
 
@@ -83,18 +84,31 @@ def run_rag(query: str, vector_store):
     tavily = TavilySearchResults(k=3)
     web_results = tavily.run(query)
 
-    # Step 4: Combine sources
-    combined_docs = []
+    # Step 4: Convert Tavily results into a document
+    web_content = ""
+    if web_results:
+        web_content = "\n".join(
+            [f"- {res['content']}" for res in web_results if 'content' in res and res['content']]
+        )
 
+    web_doc = Document(page_content=web_content, metadata={"source": "Tavily"}) if web_content else None
+
+    # Step 5: Combine retrieved docs and web docs
+    combined_docs = []
     if retrieved_docs:
         combined_docs.extend(retrieved_docs)
-
-    if web_results:
-        web_content = "\n".join([f"- {res['content']}" for res in web_results])
-        web_doc = Document(page_content=web_content, metadata={"source": "Tavily"})
+    if web_doc:
         combined_docs.append(web_doc)
 
-    # Step 5: Generate answer using Gemini
+    # Step 6: Build a helpful system prompt
+    prompt = f"""
+You are a helpful health assistant. Based on the provided documents, answer the user's medical question.
+Use both internal content and live web search results where relevant. Be detailed, accurate, and explain step-by-step if needed.
+
+User Query: {query}
+"""
+
+    # Step 7: Run LLM with chain
     llm = ChatGoogleGenerativeAI(
         model=config.CHAT_MODEL,
         google_api_key=config.GEMINI_API_KEY,
@@ -106,7 +120,7 @@ def run_rag(query: str, vector_store):
     chain = load_qa_chain(llm, chain_type="stuff")
     result = chain.run(
         input_documents=combined_docs,
-        question=f"{query}\n\nPlease explain step by step if needed."
+        question=prompt
     )
 
     return result
