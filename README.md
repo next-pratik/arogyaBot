@@ -3,7 +3,7 @@
 TEAM(SC)2-10 
 # 🩺 AarogyaBot – AI Medical Assistant
 
-📎 [Download TEAM(SC)2-10 Report (PDF)](TEAM(SC)2-10.pdf)  
+📎 [Download TEAM(SC)2-10 Report (PDF)](https://github.com/next-pratik/arogyaBot/blob/main/TEAM(SC)2-10.pdf)  
 *(Right-click the link and choose “Save link as…” to download)*
 
 # YOU MAY VISIT :- https://arogyabot.streamlit.app/
