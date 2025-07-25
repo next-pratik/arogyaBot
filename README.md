@@ -3,6 +3,9 @@
 TEAM(SC)2-10 
 # 🩺 AarogyaBot – AI Medical Assistant
 
+📎 [Download TEAM(SC)2-10 Report (PDF)](TEAM(SC)2-10.pdf)  
+*(Right-click the link and choose “Save link as…” to download)*
+
 # YOU MAY VISIT :- https://arogyabot.streamlit.app/
 (It may be slow have some patient)
 (The model is trained on docs not a complete data set. Tavily is used but in some cases it may not be effective there may be exception happen since this is not the best trained bot but we tried our level best)
