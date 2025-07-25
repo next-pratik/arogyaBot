@@ -30,7 +30,7 @@ def is_small_talk(query: str) -> bool:
         r"\bwhat can you do\b", r"\bwho are you\b", r"\bhelp\b",
         r"\bhow can you help\b", r"\bhow does this work\b",
         r"\bwhat is your name\b", r"\bstart\b", r"\bget started\b",
-        r"\bintroduce yourself\b"
+        r"\bintroduce yourself\b", r"\bhlo\b"
     ]
     query = query.lower()
     return any(re.search(pattern, query) for pattern in small_talk_patterns)

@@ -57,7 +57,6 @@ if "chat_history" not in st.session_state:
 
 # Sidebar: Clear chat history
 with st.sidebar:
-   
     if st.button("Clear Chat"):
         st.session_state.chat_history = []
         st.rerun()
@@ -71,9 +70,15 @@ for idx, chat in enumerate(st.session_state.chat_history):
         b64_audio = base64.b64encode(chat["audio"]).decode()
         components.html(f"""
             <div style="text-align: left; margin-top: -10px; margin-bottom: 20px;">
-                <span onclick="document.getElementById('audio{idx}').play()"
-                      style="cursor: pointer; font-size: 24px;"
-                      title="Play audio">
+                <span onclick="
+                    var audio = document.getElementById('audio{idx}');
+                    if (audio.paused) {{
+                        audio.play();
+                    }} else {{
+                        audio.pause();
+                    }}
+                "
+                style="cursor: pointer; font-size: 24px;" title="Play/Pause audio">
                     🎙️
                 </span>
                 <audio id="audio{idx}" src="data:audio/mp3;base64,{b64_audio}"></audio>
@@ -95,15 +100,22 @@ if prompt := st.chat_input("Ask a medical question in any language..."):
         idx = len(st.session_state.chat_history)
         components.html(f"""
             <div style="text-align: left; margin-top: -10px; margin-bottom: 20px;">
-                <span onclick="document.getElementById('audio{idx}').play()"
-                      style="cursor: pointer; font-size: 24px;"
-                      title="Play audio">
+                <span onclick="
+                    var audio = document.getElementById('audio{idx}');
+                    if (audio.paused) {{
+                        audio.play();
+                    }} else {{
+                        audio.pause();
+                    }}
+                "
+                style="cursor: pointer; font-size: 24px;" title="Play/Pause audio">
                     🎙️
                 </span>
                 <audio id="audio{idx}" src="data:audio/mp3;base64,{b64_audio}"></audio>
             </div>
         """, height=40)
 
+    # Save conversation to session state
     st.session_state.chat_history.append({
         "user": prompt,
         "bot": reply_text,
