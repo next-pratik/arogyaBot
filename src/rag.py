@@ -52,7 +52,7 @@ def handle_small_talk(query: str) -> str:
 def load_documents(file_path: str = config.DOC_PATH):
     with open(file_path, 'r', encoding='utf-8') as f:
         text = f.read()
-    splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+    splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     chunks = splitter.split_text(text)
     return [Document(page_content=chunk) for chunk in chunks]
 
@@ -109,11 +109,11 @@ def run_rag(query: str, vector_store):
 
     if retrieved_docs:
         combined_docs.extend(retrieved_docs)
-        sources.append("📚 Local Documents")
+        sources.append(" Local Documents")
 
     if web_doc:
         combined_docs.append(web_doc)
-        sources.append("🌐 Web (Tavily)")
+        sources.append(" Web (Tavily)")
 
     if not combined_docs:
         return "❌ Sorry, I couldn't find any relevant information in local documents or on the web."

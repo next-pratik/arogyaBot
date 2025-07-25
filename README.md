@@ -4,7 +4,9 @@
 # 🩺 AarogyaBot – AI Medical Assistant
 
 # YOU MAY VISIT :- https://arogyabot.streamlit.app/
+(It may be slow have some patient)
 (The model is trained on docs not a complete data set. Tavily is used but in some cases it may not be effective there may be exception happen since this is not the best trained bot but we tried our level best)
+For any query write to the developer 23cse579.pratikkumarsah@giet.edu
 
 ![Team](https://img.shields.io/badge/Team-Team(SC)2--10-green.svg)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
